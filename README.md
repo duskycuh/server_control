@@ -58,10 +58,11 @@ ServerControl uses what every Linux box already has: **SSH and systemd**.
 ```bash
 sudo mkdir -p /usr/local/bin/servercontrol
 sudo cp server_api.sh /usr/local/bin/servercontrol/
-sudo chmod +x /usr/local/bin/servercontrol/server_api.sh
+sudo chmod 755 /usr/local/bin/servercontrol/server_api.sh
 
 # optional: per-server settings
 sudo cp config.sh.example /usr/local/bin/servercontrol/config.sh
+sudo chmod 644 /usr/local/bin/servercontrol/config.sh
 sudo nano /usr/local/bin/servercontrol/config.sh
 ```
 
@@ -188,6 +189,99 @@ mcs -target:winexe -out:ServerControl.exe ServerControl.cs MainForm.cs \
 │   └── README.md          detailed setup guide (Russian)
 └── LICENSE
 ```
+
+---
+
+## Troubleshooting
+
+### Nothing happens when I double-click the .exe
+
+Look for the error log first:
+
+```
+%APPDATA%\ServerControlUniversal\error.log
+```
+
+Then check that .NET Framework 4.5 or newer is installed:
+
+```powershell
+(Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full").Version
+```
+
+If the value is missing or below `4.5`, install [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48).
+
+### Windows shows "Windows protected your PC"
+
+The executable is not code-signed, so SmartScreen warns about it. Click
+**More info** → **Run anyway**.
+
+To avoid the prompt entirely, unblock the file first:
+
+```powershell
+Unblock-File .\ServerControl.exe
+```
+
+### Antivirus deletes the .exe
+
+Unsigned .NET executables often trigger heuristics in AV software. Add the folder
+to your antivirus exclusions, or build the app yourself from `src/` — the result is
+functionally identical.
+
+### "The system cannot find the file specified" when connecting
+
+The app cannot reach `server_api.sh` on the server. Verify the path:
+
+```bash
+ls -l /usr/local/bin/servercontrol/server_api.sh
+```
+
+The file must be readable and executable by the SSH user:
+
+```bash
+sudo chmod 755 /usr/local/bin/servercontrol/server_api.sh
+sudo chmod 644 /usr/local/bin/servercontrol/config.sh
+```
+
+Then set the correct folder in **Settings → API path**.
+
+### Connects but shows no services
+
+`WATCH_SERVICES` in `config.sh` is empty. Edit it:
+
+```bash
+sudo nano /usr/local/bin/servercontrol/config.sh
+```
+
+```bash
+WATCH_SERVICES="nginx docker postgresql"
+```
+
+Restart is not needed — the app re-reads it on every refresh.
+
+### Graphs say "not enough data"
+
+The history file has fewer than two samples. The graphs read
+`$HEALTH_DIR/health_YYYY-MM-DD.log`, filled by the cron job from
+[step 3](#3-enable-history-graphs-optional). Wait a couple of hours, or run
+the cron command manually once.
+
+### Service start/stop silently fails
+
+The sudo password was rejected, or the user has no sudo rights at all. Check
+manually:
+
+```bash
+sudo -k && sudo systemctl status ssh
+```
+
+If that works, re-enter the password in the app. If the server uses
+`NOPASSWD` for some commands only, the app still needs the full sudo password
+for `systemctl` on arbitrary units.
+
+### SSR / Remote desktop: window does not appear
+
+The app opens on the current session. If you use RDP or VNC, make sure the
+session is active before launching.
 
 ---
 

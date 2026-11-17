@@ -1,0 +1,81 @@
+name: Bug report
+description: Something doesn't work — app won't start, no data, crashes
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report! Filling this out fully helps a lot — most bugs are solved
+        faster when we know the OS, .NET version and the error text.
+
+  - type: dropdown
+    id: problem
+    attributes:
+      label: What goes wrong?
+      options:
+        - The .exe won't start (nothing happens)
+        - An error window appears
+        - App starts but shows no data
+        - Service start/stop doesn't work
+        - Another problem
+    validations:
+      required: true
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      description: Run `winver` — for example "Windows 11 23H2" or "Windows 10 22H2"
+      placeholder: Windows 10 22H2
+    validations:
+      required: true
+
+  - type: input
+    id: dotnet
+    attributes:
+      label: .NET Framework version
+      description: |
+        Run in PowerShell:
+        `(Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full").Version`
+      placeholder: "4.8.09037"
+    validations:
+      required: true
+
+  - type: input
+    id: server
+    attributes:
+      label: Server OS
+      description: Linux distribution and version, if the problem concerns the server side
+      placeholder: Ubuntu 24.04
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What you did, step by step
+      placeholder: |
+        1. Extracted the ZIP
+        2. Ran ServerControl.exe
+        3. Entered user@host and password
+        4. Clicked Connect
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Error text or screenshot
+      description: |
+        Paste the full error message. If the app closes silently, check
+        `%APPDATA%\ServerControlUniversal\error.log` and paste its contents.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before submitting
+      options:
+        - label: I downloaded the release ZIP, not the "Code → Download ZIP" archive
+          required: true
+        - label: I searched existing issues for the same problem
+          required: true
