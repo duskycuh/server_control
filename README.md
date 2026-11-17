@@ -104,6 +104,12 @@ Settings are saved to `%APPDATA%\ServerControlUniversal\config.ini`.
 
 ---
 
+## Screenshots
+
+*Coming soon.*
+
+---
+
 ## Hotkeys
 
 | Key | Action |
@@ -154,7 +160,7 @@ C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /target:winexe ^
   /out:ServerControl.exe ServerControl.cs MainForm.cs ^
   /r:System.Windows.Forms.dll /r:System.Drawing.dll ^
   /r:System.Windows.Forms.DataVisualization.dll ^
-  /resource:app.ico,app.ico /win32icon:app.ico
+  /resource:app.ico,app.ico
 ```
 
 **Linux (Mono):**
@@ -162,7 +168,7 @@ C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /target:winexe ^
 mcs -target:winexe -out:ServerControl.exe ServerControl.cs MainForm.cs \
   -r:System.Windows.Forms.dll -r:System.Drawing.dll -r:System.Core.dll \
   -r:System.Windows.Forms.DataVisualization.dll \
-  -resource:app.ico,app.ico -win32icon:app.ico
+  -resource:app.ico,app.ico
 ```
 
 ---
@@ -196,7 +202,15 @@ mcs -target:winexe -out:ServerControl.exe ServerControl.cs MainForm.cs \
 
 ## Contributing
 
-Issues and pull requests are welcome.
+Issues and pull requests are welcome. For a quick check before committing:
+
+```bash
+mcs -target:winexe -out:/tmp/test.exe ServerControl.cs MainForm.cs \
+  -r:System.Windows.Forms.dll -r:System.Drawing.dll -r:System.Core.dll \
+  -r:System.Windows.Forms.DataVisualization.dll
+```
+
+Keep PRs small and focused — one change per PR.
 
 ---
 
