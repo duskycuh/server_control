@@ -1,0 +1,11 @@
+*.exe
+*.dll
+*.pdb
+config.sh
+config.ini
+*.tmp
+*.log
+.vs/
+.vscode/
+Thumbs.db
+.DS_Store
