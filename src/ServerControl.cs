@@ -69,9 +69,9 @@ namespace ServerControlUniversal
                         case "agentport": c.AgentPort = v; break;
                         case "links":
                             c.Links.Clear();
-                            foreach (var part in v.Split(';'))
+                            foreach (var part in v.Split(new char[] { ';' }))
                             {
-                                var bits = part.Split('|');
+                                var bits = part.Split(new char[] { '|' });
                                 if (bits.Length == 2 && bits[0].Trim().Length > 0)
                                     c.Links.Add(Tuple.Create(bits[0].Trim(), bits[1].Trim()));
                             }

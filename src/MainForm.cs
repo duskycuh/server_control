@@ -461,7 +461,7 @@ namespace ServerControlUniversal
                 _cfg.Links.Clear();
                 foreach (var ln in links.Text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    var bits = ln.Trim().Split('|');
+                    var bits = ln.Trim().Split(new char[] { '|' });
                     if (bits.Length == 2 && bits[0].Trim().Length > 0)
                         _cfg.Links.Add(Tuple.Create(bits[0].Trim(), bits[1].Trim()));
                 }
@@ -1161,9 +1161,43 @@ namespace ServerControlUniversal
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            // Любое исключение пишем в файл — иначе окно просто не появится.
+            Application.ThreadException += (s, e) => LogFatal(e.Exception);
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => LogFatal(e.ExceptionObject as Exception);
 
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                RunApp();
+            }
+            catch (Exception ex)
+            {
+                LogFatal(ex);
+            }
+        }
+
+        static void LogFatal(Exception ex)
+        {
+            try
+            {
+                var path = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "ServerControlUniversal");
+                Directory.CreateDirectory(path);
+                File.AppendAllText(Path.Combine(path, "error.log"),
+                    DateTime.Now + "\r\n" + (ex == null ? "(null)" : ex.ToString()) + "\r\n\r\n");
+                MessageBox.Show(
+                    "Не удалось запустить приложение.\r\n\r\n" +
+                    (ex == null ? "неизвестная ошибка" : ex.Message) +
+                    "\r\n\r\nПодробности: " + Path.Combine(path, "error.log"),
+                    "ServerControl", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch { }
+        }
+
+        static void RunApp()
+        {
             var cfg = AppConfig.Load();
             Ssh.Cfg = cfg;
 
